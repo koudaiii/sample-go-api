@@ -1,6 +1,8 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/koudaiii/sample-go-api/controllers"
 
 	"github.com/gin-gonic/gin"
@@ -8,7 +10,7 @@ import (
 
 func Initialize(r *gin.Engine) {
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"message": "Hello World!!",
 		})
 	})

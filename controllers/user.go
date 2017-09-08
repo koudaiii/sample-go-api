@@ -15,20 +15,20 @@ import (
 func GetUsers(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	db := dbpkg.DBInstance(c)
 	parameter, err := dbpkg.NewParameter(c, models.User{})
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	db, err = parameter.Paginate(db)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -40,7 +40,7 @@ func GetUsers(c *gin.Context) {
 	queryFields := helper.QueryFields(models.User{}, fields)
 
 	if err := db.Select(queryFields).Find(&users).Error; err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -51,7 +51,7 @@ func GetUsers(c *gin.Context) {
 	}
 
 	if err := parameter.SetHeaderLink(c, index); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -62,17 +62,17 @@ func GetUsers(c *gin.Context) {
 
 	if _, ok := c.GetQuery("stream"); ok {
 		enc := json.NewEncoder(c.Writer)
-		c.Status(200)
+		c.Status(http.StatusOK)
 
 		for _, user := range users {
 			fieldMap, err := helper.FieldToMap(user, fields)
 			if err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 
 			if err := enc.Encode(fieldMap); err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 		}
@@ -82,7 +82,7 @@ func GetUsers(c *gin.Context) {
 		for _, user := range users {
 			fieldMap, err := helper.FieldToMap(user, fields)
 			if err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 
@@ -90,9 +90,9 @@ func GetUsers(c *gin.Context) {
 		}
 
 		if _, ok := c.GetQuery("pretty"); ok {
-			c.IndentedJSON(200, fieldMaps)
+			c.IndentedJSON(http.StatusOK, fieldMaps)
 		} else {
-			c.JSON(200, fieldMaps)
+			c.JSON(http.StatusOK, fieldMaps)
 		}
 	}
 }
@@ -100,14 +100,14 @@ func GetUsers(c *gin.Context) {
 func GetUser(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	db := dbpkg.DBInstance(c)
 	parameter, err := dbpkg.NewParameter(c, models.User{})
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -119,13 +119,13 @@ func GetUser(c *gin.Context) {
 
 	if err := db.Select(queryFields).First(&user, id).Error; err != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
-		c.JSON(404, content)
+		c.JSON(http.StatusNotFound, content)
 		return
 	}
 
 	fieldMap, err := helper.FieldToMap(user, fields)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -135,16 +135,16 @@ func GetUser(c *gin.Context) {
 	}
 
 	if _, ok := c.GetQuery("pretty"); ok {
-		c.IndentedJSON(200, fieldMap)
+		c.IndentedJSON(http.StatusOK, fieldMap)
 	} else {
-		c.JSON(200, fieldMap)
+		c.JSON(http.StatusOK, fieldMap)
 	}
 }
 
 func CreateUser(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -152,12 +152,12 @@ func CreateUser(c *gin.Context) {
 	user := models.User{}
 
 	if err := c.Bind(&user); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := db.Create(&user).Error; err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -166,13 +166,13 @@ func CreateUser(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(201, user)
+	c.JSON(http.StatusCreated, user)
 }
 
 func UpdateUser(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -182,17 +182,17 @@ func UpdateUser(c *gin.Context) {
 
 	if db.First(&user, id).Error != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
-		c.JSON(404, content)
+		c.JSON(http.StatusNotFound, content)
 		return
 	}
 
 	if err := c.Bind(&user); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := db.Save(&user).Error; err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -201,13 +201,13 @@ func UpdateUser(c *gin.Context) {
 		// 1.0.0 <= this version < 2.0.0 !!
 	}
 
-	c.JSON(200, user)
+	c.JSON(http.StatusOK, user)
 }
 
 func DeleteUser(c *gin.Context) {
 	ver, err := version.New(c)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -217,12 +217,12 @@ func DeleteUser(c *gin.Context) {
 
 	if db.First(&user, id).Error != nil {
 		content := gin.H{"error": "user with id#" + id + " not found"}
-		c.JSON(404, content)
+		c.JSON(http.StatusNotFound, content)
 		return
 	}
 
 	if err := db.Delete(&user).Error; err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
