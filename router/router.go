@@ -7,7 +7,11 @@ import (
 )
 
 func Initialize(r *gin.Engine) {
-	r.GET("/", controllers.APIEndpoints)
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Hello World!!",
+		})
+	})
 
 	api := r.Group("")
 	{
