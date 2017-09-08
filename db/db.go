@@ -3,20 +3,24 @@ package db
 import (
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/koudaiii/sample-go-api/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/serenize/snaker"
 )
 
 func Connect() *gorm.DB {
-	dir := filepath.Dir("db/database.db")
-	db, err := gorm.Open("sqlite3", dir+"/database.db")
+	dbURL := os.Getenv("DATABASE_URL")
+
+	if dbURL == "" {
+		dbURL = "postgres://localhost:5432/sample_go_api?sslmode=disable"
+	}
+
+	db, err := gorm.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("Got error when connect database, the error is '%v'", err)
 	}
