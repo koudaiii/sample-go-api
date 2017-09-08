@@ -16,3 +16,4 @@
 bin/
 database.db
 vendor
+glide
