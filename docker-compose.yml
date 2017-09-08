@@ -1,0 +1,14 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.4
+    environment:
+      - POSTGRES_DB=sample_go_api
+      - POSTGRES_PASSWORD=password
+  web:
+    build: .
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/sample_go_api?sslmode=disable
+      - AUTOMIGRATE=1
+    ports:
+      - "8080:8080"
