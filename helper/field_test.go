@@ -171,7 +171,7 @@ func TestParseFields_NestedDeeply(t *testing.T) {
 }
 
 func TestParseFields_MultipleFields(t *testing.T) {
-	fields := "profile.nation.name,emails"
+	fields := "profile.nation.name,email"
 	result := ParseFields(fields)
 
 	if _, ok := result["profile"]; !ok {
@@ -198,12 +198,12 @@ func TestParseFields_MultipleFields(t *testing.T) {
 		t.Fatalf("result[profile][nation][name] should be nil: %#v", result)
 	}
 
-	if _, ok := result["emails"]; !ok {
-		t.Fatalf("result[emails] should exist: %#v", result)
+	if _, ok := result["email"]; !ok {
+		t.Fatalf("result[email] should exist: %#v", result)
 	}
 
-	if result["emails"] != nil {
-		t.Fatalf("result[emails] should be map: %#v", result)
+	if result["email"] != nil {
+		t.Fatalf("result[email] should be map: %#v", result)
 	}
 }
 
