@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+echo "==> Installing glide"
+go get -u github.com/Masterminds/glide
+
+echo "==> Installing hey"
+go get -u github.com/rakyll/hey
