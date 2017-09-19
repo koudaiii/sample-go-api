@@ -17,3 +17,4 @@ bin/
 database.db
 vendor
 glide
+test-*.json
