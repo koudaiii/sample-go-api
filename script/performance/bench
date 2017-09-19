@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+cd "$(dirname $0)"
+
+set -eu
+set -o pipefail
+
+GO_SERVER=${GO_SERVER:=localhost}
+GO_PORT=${GO_PORT:=8080}
+SERVER="http://$GO_SERVER:$GO_PORT"
+
+# Run
+
+for FILE in `ls -1 test-*.json`
+do
+  curl \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d "$(cat "$FILE")" \
+    "$SERVER/users" \
+    1> /dev/null
+done
+
+for i in `seq 1 100`
+do
+  curl \
+    -H 'Content-Type: application/json' \
+    -X GET \
+    "$SERVER/users/$i" \
+    1> /dev/null
+done
+
+hey \
+  $@ \
+  -H 'Content-Type: application/json' \
+  -m GET \
+  "$SERVER/users" \
