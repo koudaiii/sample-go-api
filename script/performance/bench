@@ -21,7 +21,7 @@ do
     1> /dev/null
 done
 
-for i in `seq 1 100`
+for i in `ls -1 test-*.json | wc -l`
 do
   curl \
     -H 'Content-Type: application/json' \

@@ -14,24 +14,26 @@ type Entry struct {
 }
 
 func main() {
-	for i := 1; i <= 100; i++ {
-		dummyEntries := &Entry{
-			Name:  fake.FullName(),
-			Email: fake.EmailAddress(),
-		}
+	for i := 1; i <= 10000; i++ {
+		func() {
+			dummyEntries := &Entry{
+				Name:  fake.FullName(),
+				Email: fake.EmailAddress(),
+			}
+			f, err := os.Create("./test-" + strconv.Itoa(i) + ".json")
+			if err != nil {
+				panic(err)
+			}
 
-		f, err := os.Create("./test-" + strconv.Itoa(i) + ".json")
-		if err != nil {
-			panic(err)
-		}
+			bytes, err := json.Marshal(dummyEntries)
+			if err != nil {
+				panic(err)
+			}
 
-		bytes, err := json.Marshal(dummyEntries)
-		if err != nil {
-			panic(err)
-		}
-
-		if _, err := f.Write(bytes); err != nil {
-			panic(err)
-		}
+			if _, err := f.Write(bytes); err != nil {
+				panic(err)
+			}
+			defer f.Close()
+		}()
 	}
 }
