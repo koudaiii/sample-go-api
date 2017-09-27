@@ -1,0 +1,44 @@
+# Default values for chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+image:
+  repository: quay.io/koudaiii/sample-go-api
+  tag: v0.1.0
+  pullPolicy: Always
+service:
+  name: sample-go-api
+  ## For minikube, set this to NodePort, elsewhere use LoadBalancer
+  ## ref: http://kubernetes.io/docs/user-guide/services/#publishing-services---service-types
+  ##
+  type: LoadBalancer
+  externalPort: 80
+  internalPort: 8080
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+
+## Configuration values for the postgresql dependency.
+## ref: https://github.com/kubernetes/charts/blob/master/stable/postgresql/README.md
+##
+postgresql:
+  # 9.6 is the newest supported version for the GitLab container
+  imageTag: "9.6"
+  cpu: 1000m
+  memory: 1Gi
+
+  postgresUser: postgresql
+  postgresPassword: postgresql
+  postgresDatabase: sample_go_api
+
+  persistence:
+    size: 10Gi
